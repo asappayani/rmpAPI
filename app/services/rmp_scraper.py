@@ -57,10 +57,12 @@ def _execute_gql_query(query: str, variables: dict) -> dict:
         raise RuntimeError(f"Failed to execute GraphQL query: {e}")
     
 def get_schools_data(query: str) -> list[dict]:
+    """ Get the data for the schools that match the query. """
     data = _execute_gql_query(SCHOOL_SEARCH_QUERY, {"text": query})
     return data["newSearch"]["schools"]["edges"]
 
 def get_professors_data(query: str, school_id: str) -> list[dict]:
+    """ Get the data for the professors that match the query and school id. """
     data = _execute_gql_query(PROFESSOR_SEARCH_QUERY, {"text": query, "sid": school_id})
     return data["newSearch"]["teachers"]["edges"]
 
