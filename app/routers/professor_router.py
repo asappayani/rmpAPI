@@ -50,7 +50,7 @@ async def search_professors(
 async def get_first_search(
     name: str = Query(..., description="The name of the professor to search for"),
     school_id: str = Query(..., description="The id of the school to search for"),
-):
+) -> ProfessorOut:
     """Get the first professor from the list of professors and returns it."""
     try:
         response = get_professors_data(name, school_id)
@@ -58,21 +58,9 @@ async def get_first_search(
         if not response:
             raise HTTPException(status_code=404, detail="No professors found")
         
-        professors = []
-        for edge in response:
-            node = edge["node"]
-            professors.append(ProfessorOut(
-                firstName = node.get("firstName"),
-                lastName = node.get("lastName"),
-                department = node.get("department"),
-                avgRating = node.get("avgRating"),
-                avgDifficulty = node.get("avgDifficulty"),
-                wouldTakeAgainPercent = node.get("wouldTakeAgainPercent"),
-                numRatings = node.get("numRatings"),
-                link = f"https://www.ratemyprofessors.com/professor/{node.get('legacyId')}"
-            ))
-            
-        return professors
+        first_node = response[0]["node"]
+        return _professor_to_out(first_node)
+        
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
