@@ -71,8 +71,8 @@ async def filtered_search(
     max_rating: Optional[float] = Query(None, description="The maximum rating of the professor"),
     min_difficulty: Optional[float] = Query(None, description="The minimum difficulty of the professor"),
     max_difficulty: Optional[float] = Query(None, description="The maximum difficulty of the professor"),
-    min_would_take_again: Optional[int] = Query(None, description="The minimum would take again percentage of the professor"),
-    max_would_take_again: Optional[int] = Query(None, description="The maximum would take again percentage of the professor"),
+    min_would_take_again: Optional[float] = Query(None, description="The minimum would take again percentage of the professor"),
+    max_would_take_again: Optional[float] = Query(None, description="The maximum would take again percentage of the professor"),
     min_num_ratings: Optional[int] = Query(None, description="The minimum number of ratings of the professor"),
     max_num_ratings: Optional[int] = Query(None, description="The maximum number of ratings of the professor"),
 ):
