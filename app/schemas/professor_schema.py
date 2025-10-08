@@ -11,7 +11,7 @@ class ProfessorOut(BaseModel):
     department: Optional[str] = None
     avgRating: Optional[float] = None
     avgDifficulty: Optional[float] = None
-    wouldTakeAgainPercent: Optional[int] = None
+    wouldTakeAgainPercent: Optional[float] = None
     numRatings: Optional[int] = None
     link: str
 
