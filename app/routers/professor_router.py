@@ -1,10 +1,9 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 from typing import List, Optional
 
 from app.services.rmp_scraper import get_professors_data
 from app.schemas.professor_schema import ProfessorOut
-
-# to create link  print(f"  link        : https://www.ratemyprofessors.com/professor/{legacy_id}")
+from app.main import limiter
 
 router = APIRouter(
     prefix="/professors",
@@ -25,7 +24,9 @@ def _professor_to_out(node: dict) -> ProfessorOut:
     )
 
 @router.get("/search", response_model=List[ProfessorOut])
+@limiter.limit("10/minute")
 async def search_professors(
+    request: Request,
     name: str = Query(..., description="The name of the professor to search for"),
     school_id: str = Query(..., description="The id of the school to search for"),
 ) -> List[ProfessorOut]:
@@ -46,7 +47,9 @@ async def search_professors(
         raise HTTPException(status_code=500, detail=str(e))
     
 @router.get("/search/first", response_model=ProfessorOut)
+@limiter.limit("10/minute")
 async def get_first_search(
+    request: Request,
     name: str = Query(..., description="The name of the professor to search for"),
     school_id: str = Query(..., description="The id of the school to search for"),
 ) -> ProfessorOut:
@@ -64,7 +67,9 @@ async def get_first_search(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/search/filtered", response_model=List[ProfessorOut])
+@limiter.limit("10/minute")
 async def filtered_search(
+    request: Request,
     name: str = Query(..., description="The name of the professor to search for"),
     school_id: str = Query(..., description="The id of the school to search for"),
     min_rating: Optional[float] = Query(None, description="The minimum rating of the professor"),
