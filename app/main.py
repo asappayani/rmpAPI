@@ -1,9 +1,16 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+
+from dotenv import load_dotenv
+import os
+
 from app.routers import professor_router, school_router
+
+load_dotenv()
 
 # Create FastAPI app instance
 app = FastAPI(
@@ -21,7 +28,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # remember to add my frontend url here
+    allow_origins=os.getenv("ALLOWED_ORIGINS"),  # remember to add my frontend url here
     allow_credentials=False,
     allow_methods=["GET"],
     allow_headers=["*"],
