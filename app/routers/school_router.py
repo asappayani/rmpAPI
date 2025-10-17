@@ -1,9 +1,12 @@
 from fastapi import APIRouter, HTTPException, Query, Request
 from typing import List, Optional
 
+from dotenv import load_dotenv
+import os
+
 from app.services.rmp_scraper import get_schools_data
 from app.schemas.school_schema import SchoolOut
-from app.main import limiter
+from app.services.rate_limiter import limiter
 
 router = APIRouter(
     prefix="/schools",
@@ -20,7 +23,7 @@ def _school_to_out(node: dict) -> SchoolOut:
     )
 
 @router.get("/search", response_model=List[SchoolOut])
-@limiter.limit("10/minute")
+@limiter.limit(os.getenv("RATE_LIMIT_SCHOOLS"))
 async def search_schools(
     request: Request,
     query: str = Query(..., description="The query to search for schools"),
@@ -42,7 +45,7 @@ async def search_schools(
         raise HTTPException(status_code=500, detail=str(e))
     
 @router.get("/search/first", response_model=SchoolOut)
-@limiter.limit("10/minute")
+@limiter.limit(os.getenv("RATE_LIMIT_SCHOOLS"))
 async def get_first_search(
     request: Request,
     query: str = Query(..., description="The query to search for schools"),

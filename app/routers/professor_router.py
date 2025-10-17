@@ -1,9 +1,12 @@
 from fastapi import APIRouter, HTTPException, Query, Request
 from typing import List, Optional
 
+from dotenv import load_dotenv
+import os
+
 from app.services.rmp_scraper import get_professors_data
 from app.schemas.professor_schema import ProfessorOut
-from app.main import limiter
+from app.services.rate_limiter import limiter
 
 router = APIRouter(
     prefix="/professors",
@@ -24,7 +27,7 @@ def _professor_to_out(node: dict) -> ProfessorOut:
     )
 
 @router.get("/search", response_model=List[ProfessorOut])
-@limiter.limit("10/minute")
+@limiter.limit(os.getenv("RATE_LIMIT_PROFESSORS"))
 async def search_professors(
     request: Request,
     name: str = Query(..., description="The name of the professor to search for"),
@@ -47,7 +50,7 @@ async def search_professors(
         raise HTTPException(status_code=500, detail=str(e))
     
 @router.get("/search/first", response_model=ProfessorOut)
-@limiter.limit("10/minute")
+@limiter.limit(os.getenv("RATE_LIMIT_PROFESSORS"))
 async def get_first_search(
     request: Request,
     name: str = Query(..., description="The name of the professor to search for"),
