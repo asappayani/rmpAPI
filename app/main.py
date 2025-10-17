@@ -1,14 +1,15 @@
 from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
 from dotenv import load_dotenv
 import os
 
 from app.routers import professor_router, school_router
+from app.services.rate_limiter import limiter
 
 load_dotenv()
 
@@ -21,9 +22,12 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(status_code=500, content={"detail": "Internal Server Error"})
 
 # Add CORS middleware
 app.add_middleware(
