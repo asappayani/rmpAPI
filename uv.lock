@@ -546,7 +546,7 @@ wheels = [
 [[package]]
 name = "rmp-api"
 version = "0.2.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "fastapi" },
     { name = "httpx" },
